@@ -1,35 +1,25 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-
 from src.database import Base, engine
-from src.products.router import product_router
-from src.auth.router import user_router, auth
 
+# ИМПОРТ ВСЕХ МОДЕЛЕЙ (Обязательно!)
+# Это те самые 4 структуры, о которых вы говорили
+from src.auth.models import User      # Юзер (7 элементов)
+from src.teams.models import Team     # Тим (3 элемента)
+from src.products.models import Project # Проекты (4 элемента)
+from src.events.models import Event    # Эвенты (5 элементов)
 
+# Команда для создания таблиц
+# Она пробегает по всем импортированным моделям и создает их в sql_app.db
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-auth.handle_errors(app)
+# Подключение роутеров для каждой структуры
+# app.include_router(user_router)
+# app.include_router(team_router)
+# app.include_router(project_router)
+# app.include_router(event_router)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.include_router(
-    product_router,
-    prefix="/api/v1",
-)
-
-app.include_router(
-    user_router,
-    prefix="/api/v1",
-)
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", log_level="info")
+@app.get("/")
+def read_root():
+    return {"message": "Таблицы успешно созданы, сервер запущен"}

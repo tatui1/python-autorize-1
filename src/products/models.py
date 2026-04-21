@@ -1,17 +1,18 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, ForeignKey
-from datetime import datetime
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import relationship
-
 from src.database import Base
 
+class Project(Base):
+    __tablename__ = "projects"
+    
+    id = Column(Integer, primary_key=True, index=True)      # 1
+    team = Column(String)                                  # 2
+    description = Column(Text)                             # 3
+    uploading_files = Column(String)                       # 4 (путь к файлу)
 
-class Product(Base):
-    __tablename__ = "products"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    price = Column(Float, nullable=False)
-    is_available = Column(Boolean, default=False, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", back_populates="products")
+    # Связи
+    team_id = Column(Integer, ForeignKey("teams.id"))
+    team_rel = relationship("Team", back_populates="projects")
+    
+    event_id = Column(Integer, ForeignKey("events.id"))
+    event = relationship("Event", back_populates="projects")
